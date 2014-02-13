@@ -1,4 +1,4 @@
-from undictify.styles import toggle_style
+from dictstyles.styles import toggle_style
 
 
 def test_dict_to_curly():
