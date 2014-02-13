@@ -1,17 +1,17 @@
+# dictstyles
 
-![Build Status] (https://secure.travis-ci.org/vmalloc/undictify.png )
+Quickly change dictionary styles:
 
+```python
+>>> from dictstyles.styles import toggle_style
 
-![Downloads] (https://pypip.in/d/undictify/badge.png )
+>>> toggle_style("dict(a=1, b=2)")
+{'a': 1, 'b': 2}
+```
 
-![Version] (https://pypip.in/v/undictify/badge.png )
+Also can be used from command-line:
 
-Overview
-========
-
-
-Licence
-=======
-
-BSD3
-
+```
+$ echo "dict(a=1, b=2)" | toggle_dict_style
+{'a': 1, 'b': 2}
+```
