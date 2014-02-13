@@ -1,6 +1,6 @@
 import ast
 
-from .utils import unparse
+from ._unparse import unparse
 
 
 def toggle_style(s):

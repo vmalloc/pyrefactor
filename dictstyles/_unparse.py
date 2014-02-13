@@ -1,4 +1,5 @@
-"Usage: unparse.py <path to source file>"
+# Taken from the Python Demo code at http://svn.python.org/projects/python/trunk/Demo/parser/unparse.py
+# PSF Licensed
 import sys
 import ast
 import cStringIO
