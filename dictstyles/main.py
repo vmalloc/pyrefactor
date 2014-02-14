@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser(usage="%(prog)s [options] args...")
 
 def main(args):
     source = sys.stdin.read()
-    return toggle_style(source)
+    sys.stdout.write(toggle_style(source))
     return 0
 
 
