@@ -1,6 +1,17 @@
 import ast
+import functools
+import itertools
 
 from ._unparse import unparse
+
+
+def _preserves_trailing_whitespaces(func):
+    @functools.wraps(func)
+    def new_func(s):
+        trailing = "".join(itertools.takewhile(lambda s: s.isspace(), s[::-1]))[::-1]
+        returned = func(s)
+        return returned.rstrip() + trailing
+    return new_func
 
 
 def toggle_style(s):
@@ -8,6 +19,7 @@ def toggle_style(s):
         return curly_to_dict(s)
     return dict_to_curly(s)
 
+@_preserves_trailing_whitespaces
 def curly_to_dict(s):
     expr = _get_expr(s)
     returned = ast.Call()
@@ -24,6 +36,7 @@ def curly_to_dict(s):
     returned.kwargs = None
     return unparse(returned)
 
+@_preserves_trailing_whitespaces
 def dict_to_curly(s):
     expr = _get_expr(s)
     returned = ast.Dict()
