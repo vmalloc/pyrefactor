@@ -1,4 +1,4 @@
-from dictstyles.styles import toggle_style
+from pyrefactor.styles import toggle_style
 
 
 def test_dict_to_curly():
