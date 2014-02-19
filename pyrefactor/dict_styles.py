@@ -14,7 +14,7 @@ def _preserves_trailing_whitespaces(func):
     return new_func
 
 
-def toggle_style(s):
+def toggle_dict_style(s):
     if s.startswith("{"):
         return curly_to_dict(s)
     return dict_to_curly(s)

@@ -28,6 +28,6 @@ setup(name="pyrefactor",
 
       entry_points = {
           "console_scripts": [
-              "toggle_dict_style = pyrefactor.main:main_entry_point",
+              "pyrefactor = pyrefactor.main:main_entry_point",
               ]},
       )
