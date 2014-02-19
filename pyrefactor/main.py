@@ -4,6 +4,7 @@ import logging
 import sys
 
 parser = argparse.ArgumentParser(usage="%(prog)s [options] args...")
+parser.add_argument("-f", "--inputfile", type=argparse.FileType("r"), default="-")
 subparsers = parser.add_subparsers(help="Action to be taken")
 
 def _action(name):
@@ -23,9 +24,10 @@ def make_processor(function_name):
         return 0
 
 make_processor("pyrefactor.dict_styles.toggle_dict_style")
+make_processor("pyrefactor.assertions.toggle_assert_style")
 
 def _process(args, func):
-    sys.stdout.write(func(sys.stdin.read()))
+    sys.stdout.write(func(args.inputfile.read()))
 
 #### For use with entry_points/console_scripts
 def main_entry_point():

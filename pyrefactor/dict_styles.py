@@ -1,17 +1,7 @@
 import ast
-import functools
-import itertools
 
 from ._unparse import unparse
-
-
-def _preserves_trailing_whitespaces(func):
-    @functools.wraps(func)
-    def new_func(s):
-        trailing = "".join(itertools.takewhile(lambda s: s.isspace(), s[::-1]))[::-1]
-        returned = func(s)
-        return returned.rstrip() + trailing
-    return new_func
+from .utils import preserves_trailing_whitespaces, get_expr
 
 
 def toggle_dict_style(s):
@@ -19,9 +9,9 @@ def toggle_dict_style(s):
         return curly_to_dict(s)
     return dict_to_curly(s)
 
-@_preserves_trailing_whitespaces
+@preserves_trailing_whitespaces
 def curly_to_dict(s):
-    expr = _get_expr(s)
+    expr = get_expr(s)
     returned = ast.Call()
     returned.func = ast.Name()
     returned.func.id = 'dict'
@@ -36,9 +26,9 @@ def curly_to_dict(s):
     returned.kwargs = None
     return unparse(returned)
 
-@_preserves_trailing_whitespaces
+@preserves_trailing_whitespaces
 def dict_to_curly(s):
-    expr = _get_expr(s)
+    expr = get_expr(s)
     returned = ast.Dict()
     returned.keys = []
     returned.values = []
@@ -46,8 +36,3 @@ def dict_to_curly(s):
         returned.keys.append(ast.Str(s=keyword.arg))
         returned.values.append(keyword.value)
     return unparse(returned)
-
-def _get_expr(s):
-    tree = ast.parse(s)
-    [expr] = tree.body
-    return expr.value
