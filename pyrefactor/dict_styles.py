@@ -1,7 +1,8 @@
 import ast
 
 from ._unparse import unparse
-from .utils import preserves_trailing_whitespaces, get_expr
+from .utils import (get_expr, noop_on_syntax_errors,
+                    preserves_trailing_whitespaces)
 
 
 def toggle_dict_style(s):
@@ -9,6 +10,7 @@ def toggle_dict_style(s):
         return curly_to_dict(s)
     return dict_to_curly(s)
 
+@noop_on_syntax_errors
 @preserves_trailing_whitespaces
 def curly_to_dict(s):
     expr = get_expr(s)

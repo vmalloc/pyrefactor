@@ -14,5 +14,5 @@ def test_complex_dict():
         assert toggle_dict_style(dict_form) == curly_form
         assert toggle_dict_style(curly_form) == dict_form
 
-def test_errors():
-    assert toggle_dict_style("{a.b.c.d: 2}") == "{a.b.c.d: 2}"
+def test_errors(invalid_syntax):
+    assert toggle_dict_style(invalid_syntax) == invalid_syntax

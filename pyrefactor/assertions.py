@@ -1,19 +1,17 @@
 import ast
 
 from ._unparse import unparse
-from .utils import preserves_trailing_whitespaces, get_expr
+from .utils import preserves_trailing_whitespaces, get_expr, noop_on_syntax_errors
 
+@noop_on_syntax_errors
 @preserves_trailing_whitespaces
 def toggle_assert_style(s):
     returned = expr = ast.parse(s).body[0]
-    print "Processing", ast.dump(expr)
     if isinstance(expr, ast.Assert):
         returned = _assert_to_assert_method(expr)
 
     elif isinstance(expr.value, ast.Call) and isinstance(expr.value.func, ast.Attribute) and expr.value.func.value.id == "self":
         returned = _assert_method_to_assert(expr.value)
-
-    print "Returning", ast.dump(returned)
 
     return unparse(returned)
 
@@ -40,9 +38,12 @@ def _assert_method_to_assert(expr):
     return returned
 
 def _construct_method(name, args):
-    returned = ast.Call()
-    returned.func = ast.Attribute(ast.Name("self", ast.Load()), name, ast.Load())
-    returned.args = list(args)
-    returned.keywords = []
-    returned.starargs = returned.kwargs = None
+    assertion = ast.Call()
+    assertion.func = ast.Attribute(ast.Name("self", ast.Load()), name, ast.Load())
+    assertion.args = list(args)
+    assertion.keywords = []
+    assertion.starargs = assertion.kwargs = None
+
+    returned = ast.Expression()
+    returned.value = assertion
     return returned
