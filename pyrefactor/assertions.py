@@ -15,24 +15,39 @@ def toggle_assert_style(s):
 
     return unparse(returned)
 
+operator_to_assertion_method = {
+    ast.Eq: "assertEquals",
+    ast.GtE: "assertGreaterEqual",
+    ast.LtE: "assertLessEqual",
+    ast.Lt: "assertLess",
+    ast.Gt: "assertGreater",
+    ast.NotEq: "assertNotEqual",
+    ast.Is: "assertIs",
+    ast.IsNot: "assertIsNot",
+}
+assertion_method_to_operator = {method_name: op for op, method_name in operator_to_assertion_method.items()}
+
 def _assert_to_assert_method(expr):
     if isinstance(expr.test, ast.Compare):
         [op] = expr.test.ops
-        if isinstance(op, ast.Eq):
-            args = [expr.test.left, expr.test.comparators[0]]
-            if expr.msg is not None:
-                args.append(expr.msg)
-            return _construct_method("assertEquals", args)
+        assertion_method_name = operator_to_assertion_method.get(op.__class__)
+        if assertion_method_name is None:
+            return expr
+        args = [expr.test.left, expr.test.comparators[0]]
+        if expr.msg is not None:
+            args.append(expr.msg)
+        return _construct_method(assertion_method_name, args)
     return expr
 
 def _assert_method_to_assert(expr):
-    if expr.func.attr != "assertEquals":
+    op = assertion_method_to_operator.get(expr.func.attr)
+    if op is None:
         return expr
 
     returned = ast.Assert()
     returned.test = ast.Compare()
     returned.test.left=expr.args[0]
-    returned.test.ops = [ast.Eq()]
+    returned.test.ops = [op()]
     returned.test.comparators = [expr.args[1]]
     returned.msg = expr.args[2] if len(expr.args) > 2 else None
     return returned
