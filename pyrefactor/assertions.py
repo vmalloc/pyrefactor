@@ -24,6 +24,8 @@ operator_to_assertion_method = {
     ast.NotEq: "assertNotEqual",
     ast.Is: "assertIs",
     ast.IsNot: "assertIsNot",
+    ast.In: "assertIn",
+    ast.NotIn: "assertNotIn",
 }
 assertion_method_to_operator = {method_name: op for op, method_name in operator_to_assertion_method.items()}
 
