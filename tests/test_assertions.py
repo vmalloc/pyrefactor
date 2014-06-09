@@ -9,5 +9,17 @@ def test_assert_equals():
         assert toggle_assert_style(assert_form) == method_form
         assert toggle_assert_style(method_form) == assert_form
 
+def test_assert_true_false():
+    for assert_form, method_form in [
+    ("self.assertTrue(x)", "assert x"),
+    ("self.assertFalse(x)", "assert (not x)"),
+    ("self.assertFalse(x, 'msg')", "assert (not x), 'msg'"),
+    ("self.assertTrue(x, 'msg')", "assert x, 'msg'"),
+    ("self.assertTrue(x, 'msg')", "assert x, 'msg'"),
+    ]:
+        assert toggle_assert_style(assert_form) == method_form
+        assert toggle_assert_style(method_form) == assert_form
+
+
 def test_errors(invalid_syntax):
     assert toggle_assert_style(invalid_syntax) == invalid_syntax

@@ -28,6 +28,7 @@ operator_to_assertion_method = {
     ast.NotIn: "assertNotIn",
 }
 assertion_method_to_operator = {method_name: op for op, method_name in operator_to_assertion_method.items()}
+assertion_method_to_operator["assertEqual"] = ast.Eq
 
 def _assert_to_assert_method(expr):
     if isinstance(expr.test, ast.Compare):
@@ -39,9 +40,23 @@ def _assert_to_assert_method(expr):
         if expr.msg is not None:
             args.append(expr.msg)
         return _construct_method(assertion_method_name, args)
-    return expr
+    elif isinstance(expr.test, ast.UnaryOp) and isinstance(expr.test.op, ast.Not):
+        return _construct_method("assertFalse", [expr.test.operand, expr.msg])
+    return _construct_method("assertTrue", [expr.test, expr.msg])
 
 def _assert_method_to_assert(expr):
+
+    if expr.func.attr in ("assertTrue", "assertFalse"):
+        returned = ast.Assert()
+        if expr.func.attr == "assertFalse":
+            returned.test = ast.UnaryOp()
+            returned.test.op = ast.Not()
+            returned.test.operand = expr.args[0]
+        else:
+            returned.test = expr.args[0]
+        returned.msg = expr.args[1] if len(expr.args) > 1 else None
+        return returned
+
     op = assertion_method_to_operator.get(expr.func.attr)
     if op is None:
         return expr
@@ -55,6 +70,7 @@ def _assert_method_to_assert(expr):
     return returned
 
 def _construct_method(name, args):
+    args = [arg for arg in args if arg is not None]
     assertion = ast.Call()
     assertion.func = ast.Attribute(ast.Name("self", ast.Load()), name, ast.Load())
     assertion.args = list(args)
