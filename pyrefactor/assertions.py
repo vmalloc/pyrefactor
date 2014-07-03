@@ -37,6 +37,9 @@ def _assert_to_assert_method(expr):
         if assertion_method_name is None:
             return expr
         args = [expr.test.left, expr.test.comparators[0]]
+        if args[1].id == 'None' and isinstance(op, (ast.Is, ast.IsNot)):
+            args.pop(1)
+            assertion_method_name = "assertIsNone" if isinstance(op, ast.Is) else "assertIsNotNone"
         if expr.msg is not None:
             args.append(expr.msg)
         return _construct_method(assertion_method_name, args)
@@ -46,7 +49,7 @@ def _assert_to_assert_method(expr):
 
 def _assert_method_to_assert(expr):
 
-    if expr.func.attr in ("assertTrue", "assertFalse"):
+    if expr.func.attr in ("assertTrue", "assert_", "assertFalse"):
         returned = ast.Assert()
         if expr.func.attr == "assertFalse":
             returned.test = ast.UnaryOp()
@@ -54,6 +57,16 @@ def _assert_method_to_assert(expr):
             returned.test.operand = expr.args[0]
         else:
             returned.test = expr.args[0]
+        returned.msg = expr.args[1] if len(expr.args) > 1 else None
+        return returned
+
+    if expr.func.attr in ("assertIsNone", "assertIsNotNone"):
+        returned = ast.Assert()
+        returned.test = ast.Compare()
+        returned.test.ops = [ast.IsNot() if expr.func.attr == "assertIsNotNone" else ast.Is()]
+        returned.test.left = expr.args[0]
+        returned.test.comparators = [ast.Name()]
+        returned.test.comparators[0].id = 'None'
         returned.msg = expr.args[1] if len(expr.args) > 1 else None
         return returned
 
