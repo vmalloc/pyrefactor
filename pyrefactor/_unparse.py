@@ -601,6 +601,6 @@ class Unparser(object):
 
 
 def unparse(source):
-    output = cStringIO.StringIO() # pylint: disable=no-member
+    output = cStringIO()
     Unparser(source, output)
     return output.getvalue()
