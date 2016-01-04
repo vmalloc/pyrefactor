@@ -1,10 +1,18 @@
 language: python
 python:
-  - "2.6"
-  - "2.7"
-  - "3.3"
-  - "3.4"
-  - "3.5"
-  - "pypy"
-script: 
-  - "python _test_build.py"
+- '2.6'
+- '2.7'
+- '3.3'
+- '3.4'
+- '3.5'
+- pypy
+script:
+- python _test_build.py
+deploy:
+  provider: pypi
+  user: vmalloc
+  password:
+    secure: fAAojHwIc4gLZmZPA2WWaLWl6ioc1zolIA6paxRkFjIR5oCXcvhFVh5a2HlKM8HaoCgnJol3zglGObkltm38769+MmYLxuLta4AUT375fcxC7/Y4v04zFMv8havg66M+wBImwrOe1mfwYZTnLkUdhJIN6IeevwJD4bDjPzqzj4o=
+  on:
+    tags: true
+    repo: vmalloc/pyrefactor
